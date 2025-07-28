@@ -28,7 +28,7 @@
     }
 
     .container > div {
-      flex: 1 1 400px; /* min 400px, growable */
+      flex: 1 1 400px;
       background-color: #13161f;
       padding: 20px;
       border: 1px solid #82aaff;
@@ -60,6 +60,7 @@
       padding: 10px 20px;
       border-radius: 5px;
       cursor: pointer;
+      transition: background-color 0.3s ease;
     }
 
     input[type="submit"]:hover {
@@ -71,19 +72,19 @@
   <h1>File Uploader for AC</h1>
   <div class="container">
     <div>
-      <h2>cars</h2>
-      <form method="post" enctype="multipart/form-data">
-        <input type="file" webkitdirectory directory multiple>
-        <br>
-        <input type="submit" value="Upload Cars">
+      <h2>Cars</h2>
+      <form method="post" enctype="multipart/form-data" action="/upload/cars">
+        <input type="file" name="files" webkitdirectory directory multiple />
+        <br />
+        <input type="submit" value="Upload Cars" />
       </form>
     </div>
     <div>
-      <h2>tracks</h2>
-      <form method="post" enctype="multipart/form-data">
-        <input type="file" webkitdirectory directory multiple>
-        <br>
-        <input type="submit" value="Upload Tracks">
+      <h2>Tracks</h2>
+      <form method="post" enctype="multipart/form-data" action="/upload/tracks">
+        <input type="file" name="files" webkitdirectory directory multiple />
+        <br />
+        <input type="submit" value="Upload Tracks" />
       </form>
     </div>
   </div>
