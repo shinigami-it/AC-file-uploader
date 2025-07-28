@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>File Uploader for AC</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+      background-color: #1b202c;
+      color: #bac7e4;
+    }
+
+    h1 {
+      text-align: center;
+      color: #d1dfff;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+
+    .container > div {
+      flex: 1 1 400px; /* min 400px, growable */
+      background-color: #13161f;
+      padding: 20px;
+      border: 1px solid #82aaff;
+      border-radius: 10px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    h2 {
+      color: #d1dfff;
+      margin-bottom: 15px;
+    }
+
+    input[type="file"] {
+      background-color: #13161f;
+      color: #bac7e4;
+      border: 1px dashed #37c886;
+      padding: 10px;
+      border-radius: 5px;
+      width: 100%;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+    }
+
+    input[type="submit"] {
+      background-color: #37c886cc;
+      color: #f8fafd;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #37c886;
+    }
+  </style>
+</head>
+<body>
+  <h1>File Uploader for AC</h1>
+  <div class="container">
+    <div>
+      <h2>cars</h2>
+      <form method="post" enctype="multipart/form-data">
+        <input type="file" webkitdirectory directory multiple>
+        <br>
+        <input type="submit" value="Upload Cars">
+      </form>
+    </div>
+    <div>
+      <h2>tracks</h2>
+      <form method="post" enctype="multipart/form-data">
+        <input type="file" webkitdirectory directory multiple>
+        <br>
+        <input type="submit" value="Upload Tracks">
+      </form>
+    </div>
+  </div>
+</body>
+</html>
