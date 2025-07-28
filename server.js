@@ -1,12 +1,14 @@
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const app = express();
 const PORT = 3000;
 
-const PASSWORD = '8T0$D.bw?4II!$mRg29L.h?L$2X9!CYI.?rZhVD!TQGGDFQ$7.g??!yv?SmeI.Su!d$W6Ml';
-const SESSION_SECRET = 'TiTYUb6r3E3O9aP8R8tTop93Lqq9ljL1RKAfo1j9ohz3VZYtfM';
+const PASSWORD = process.env.PASSWORD;
+const SESSION_SECRET = process.env.SESSION_SECRET;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
