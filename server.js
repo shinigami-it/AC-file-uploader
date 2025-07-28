@@ -29,10 +29,12 @@ app.use((req, res, next) => {
   res.locals.nonce = nonce
   res.setHeader(
     "Content-Security-Policy",
-    `default-src 'self'; script-src 'self' 'nonce-${nonce}'; style-src 'self' 'unsafe-inline';`
+    `default-src 'self'; script-src 'self' 'nonce-${nonce}'; style-src 'self' 'unsafe-inline'; img-src 'self';`
   )
   next()
 })
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.get("/", (req, res) => {
   if (!req.session.authenticated) {
