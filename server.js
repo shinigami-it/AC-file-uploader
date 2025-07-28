@@ -34,7 +34,7 @@ app.use((req, res, next) => {
   next()
 })
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")))
 
 app.get("/", (req, res) => {
   if (!req.session.authenticated) {
@@ -86,7 +86,10 @@ app.post("/cars", upload.any(), async (req, res) => {
     return res.status(400).send("No files uploaded")
   }
 
-  req.files.forEach((file) => {
+  console.log(`Uploading ${req.files.length} car files:`)
+  req.files.forEach(f => console.log(" -", f.originalname))
+
+  req.files.forEach(file => {
     const relPath = file.originalname
     const destPath = path.join(carsDir, relPath)
     const destDir = path.dirname(destPath)
@@ -95,8 +98,11 @@ app.post("/cars", upload.any(), async (req, res) => {
   })
 
   exec(`chown -R kmf:kmf ${carsDir}`, async (err) => {
+    const chownSuccess = !err
     if (err) {
-      return res.status(500).send("Failed to set ownership")
+      console.error("chown failed:", err)
+    } else {
+      console.log("chown successful for cars directory")
     }
 
     if (DISCORD_WEBHOOK_URL) {
@@ -110,11 +116,15 @@ app.post("/cars", upload.any(), async (req, res) => {
             {
               title: `New car uploaded: ${carName}`,
               description: `**${req.files.length}** files uploaded`,
-              color: 3066993,
+              color: chownSuccess ? 3066993 : 15158332,
               fields: [
                 {
                   name: "Files",
                   value: filesList.length > 1024 ? filesList.slice(0, 1020) + "..." : filesList
+                },
+                {
+                  name: "Ownership",
+                  value: chownSuccess ? "✅ Ownership successfully set with `chown`" : "❌ Failed to set ownership (`chown` error)"
                 }
               ],
               timestamp: new Date().toISOString()
@@ -122,17 +132,20 @@ app.post("/cars", upload.any(), async (req, res) => {
           ]
         }
 
-        await fetch(DISCORD_WEBHOOK_URL, {
+        const response = await fetch(DISCORD_WEBHOOK_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body)
         })
-      } catch {
-        // silently ignore webhook errors
+
+        const resText = await response.text()
+        console.log("Discord webhook response:", response.status, resText)
+      } catch (err) {
+        console.error("Webhook failed:", err)
       }
     }
 
-    res.send("Cars uploaded with structure and ownership set")
+    res.send(chownSuccess ? "Cars uploaded with structure and ownership set" : "Upload complete, but ownership setting failed")
   })
 })
 
@@ -141,7 +154,10 @@ app.post("/tracks", upload.any(), (req, res) => {
     return res.status(400).send("No files uploaded")
   }
 
-  req.files.forEach((file) => {
+  console.log(`Uploading ${req.files.length} track files:`)
+  req.files.forEach(f => console.log(" -", f.originalname))
+
+  req.files.forEach(file => {
     const relPath = file.originalname
     const destPath = path.join(tracksDir, relPath)
     const destDir = path.dirname(destPath)
@@ -149,11 +165,55 @@ app.post("/tracks", upload.any(), (req, res) => {
     fs.writeFileSync(destPath, file.buffer)
   })
 
-  exec(`chown -R kmf:kmf ${tracksDir}`, (err) => {
+  exec(`chown -R kmf:kmf ${tracksDir}`, async (err) => {
+    const chownSuccess = !err
     if (err) {
-      return res.status(500).send("Failed to set ownership")
+      console.error("chown failed:", err)
+    } else {
+      console.log("chown successful for tracks directory")
     }
-    res.send("Tracks uploaded with structure and ownership set")
+
+    if (DISCORD_WEBHOOK_URL) {
+      try {
+        const firstFile = req.files[0].originalname
+        const trackName = firstFile.includes("/") ? firstFile.split("/")[0] : "(root folder)"
+        const filesList = req.files.map(f => f.originalname).join("\n")
+
+        const body = {
+          embeds: [
+            {
+              title: `New track uploaded: ${trackName}`,
+              description: `**${req.files.length}** files uploaded`,
+              color: chownSuccess ? 3066993 : 15158332,
+              fields: [
+                {
+                  name: "Files",
+                  value: filesList.length > 1024 ? filesList.slice(0, 1020) + "..." : filesList
+                },
+                {
+                  name: "Ownership",
+                  value: chownSuccess ? "✅ Ownership successfully set with `chown`" : "❌ Failed to set ownership (`chown` error)"
+                }
+              ],
+              timestamp: new Date().toISOString()
+            }
+          ]
+        }
+
+        const response = await fetch(DISCORD_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        })
+
+        const resText = await response.text()
+        console.log("Discord webhook response:", response.status, resText)
+      } catch (err) {
+        console.error("Webhook failed:", err)
+      }
+    }
+
+    res.send(chownSuccess ? "Tracks uploaded with structure and ownership set" : "Upload complete, but ownership setting failed")
   })
 })
 
